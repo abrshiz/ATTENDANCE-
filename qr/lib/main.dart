@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qr_app/screens/teacher_dashboard.dart';
+import 'screens/class_management_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,15 +11,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Attendance Checker',
+      title: 'Attendance Management System',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         useMaterial3: true,
-        brightness: Brightness.light,
-        appBarTheme: const AppBarTheme(elevation: 0, centerTitle: true),
       ),
-      home: const TeacherDashboard(),
+      home: const ClassManagementScreen(),
     );
   }
 }

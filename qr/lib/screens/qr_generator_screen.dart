@@ -9,9 +9,14 @@ import 'package:gal/gal.dart';
 import '../models/student.dart';
 
 class QRGeneratorScreen extends StatefulWidget {
+  final String classId;
   final Function(Student) onStudentGenerated;
 
-  const QRGeneratorScreen({super.key, required this.onStudentGenerated});
+  const QRGeneratorScreen({
+    super.key,
+    required this.classId,
+    required this.onStudentGenerated,
+  });
 
   @override
   State<QRGeneratorScreen> createState() => _QRGeneratorScreenState();
@@ -53,35 +58,29 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
     setState(() => _isSaving = true);
 
     try {
-      // Request permission
       bool hasPermission = await _requestPermission();
       if (!hasPermission) {
         _showMessage("Storage permission denied", Colors.red);
         return;
       }
 
-      // Get the render object
-      final RenderObject? renderObject = _qrKey.currentContext
-          ?.findRenderObject();
+      final RenderObject? renderObject =
+          _qrKey.currentContext?.findRenderObject();
 
       if (renderObject == null) {
         _showMessage("QR widget not found", Colors.red);
         return;
       }
 
-      // Check if it's a RenderRepaintBoundary
       if (renderObject is! RenderRepaintBoundary) {
         _showMessage("Widget is not properly wrapped", Colors.red);
         return;
       }
 
       final boundary = renderObject;
-
-      // Capture the image
       final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      final ByteData? byteData = await image.toByteData(
-        format: ui.ImageByteFormat.png,
-      );
+      final ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
 
       if (byteData == null) {
         _showMessage("Failed to generate image", Colors.red);
@@ -92,9 +91,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
       final fileName =
           "qr_${_idController.text}_${DateTime.now().millisecondsSinceEpoch}.png";
 
-      // Save to gallery
       await Gal.putImageBytes(pngBytes, name: fileName);
-
       _showMessage("QR saved to gallery", Colors.green);
     } catch (e) {
       _showMessage("Error: $e", Colors.red);
@@ -114,7 +111,6 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
       widget.onStudentGenerated(student);
       _showMessage("${student.name} marked present!", Colors.green);
 
-      // Clear fields after marking
       _idController.clear();
       _nameController.clear();
       setState(() {
@@ -162,7 +158,6 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
                       labelText: "Student ID",
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.badge),
-                      hintText: "e.g., 2024001",
                     ),
                     onChanged: (_) => _generateData(),
                   ),
@@ -173,7 +168,6 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
                       labelText: "Student Name",
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.person),
-                      hintText: "e.g., John Doe",
                     ),
                     onChanged: (_) => _generateData(),
                   ),
@@ -181,9 +175,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
               ),
             ),
           ),
-
           const SizedBox(height: 24),
-
           if (_qrData.isNotEmpty) ...[
             Center(
               child: RepaintBoundary(
@@ -197,7 +189,6 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
                         color: Colors.grey.withOpacity(0.2),
                         spreadRadius: 2,
                         blurRadius: 8,
-                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
@@ -217,9 +208,7 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
                 ),
               ),
             ),
-
             const SizedBox(height: 24),
-
             Row(
               children: [
                 Expanded(
@@ -227,9 +216,6 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
                     onPressed: _isSaving ? null : _saveQrToGallery,
                     icon: const Icon(Icons.download),
                     label: Text(_isSaving ? "Saving..." : "Save QR"),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -241,7 +227,6 @@ class _QRGeneratorScreenState extends State<QRGeneratorScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
                 ),

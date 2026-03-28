@@ -4,9 +4,14 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import '../models/student.dart';
 
 class QRScannerScreen extends StatefulWidget {
+  final String classId;
   final Function(Student) onStudentScanned;
 
-  const QRScannerScreen({super.key, required this.onStudentScanned});
+  const QRScannerScreen({
+    super.key,
+    required this.classId,
+    required this.onStudentScanned,
+  });
 
   @override
   State<QRScannerScreen> createState() => _QRScannerScreenState();
@@ -70,29 +75,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Student: ${student.name}",
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text("Student: ${student.name}",
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             Text("ID: ${student.id}"),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.check, color: Colors.green, size: 16),
-                  SizedBox(width: 4),
-                  Text(
-                    "Marked as Present",
-                    style: TextStyle(color: Colors.green),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
         actions: [
@@ -128,28 +113,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       children: [
         Expanded(
           flex: 4,
-          child: Stack(
-            children: [
-              MobileScanner(controller: cameraController, onDetect: _onDetect),
-              // Scanner overlay
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.white, width: 2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                margin: const EdgeInsets.all(40),
-                child: const Center(
-                  child: Text(
-                    "Scan QR Code",
-                    style: TextStyle(
-                      color: Colors.white,
-                      backgroundColor: Colors.black54,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          child: MobileScanner(
+            controller: cameraController,
+            onDetect: _onDetect,
           ),
         ),
         Container(
@@ -161,7 +127,6 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 color: Colors.grey.withOpacity(0.2),
                 spreadRadius: 2,
                 blurRadius: 8,
-                offset: const Offset(0, -2),
               ),
             ],
           ),
@@ -185,16 +150,13 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       cameraController.torchState == TorchState.off
                           ? Icons.flashlight_off
                           : Icons.flashlight_on,
-                      size: 28,
                     ),
                     onPressed: () => cameraController.toggleTorch(),
-                    tooltip: "Toggle Flashlight",
                   ),
                   const SizedBox(width: 24),
                   IconButton(
-                    icon: const Icon(Icons.switch_camera, size: 28),
+                    icon: const Icon(Icons.switch_camera),
                     onPressed: () => cameraController.switchCamera(),
-                    tooltip: "Switch Camera",
                   ),
                 ],
               ),
