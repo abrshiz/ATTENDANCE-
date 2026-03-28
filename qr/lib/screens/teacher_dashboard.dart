@@ -27,25 +27,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _loadSampleData();
-  }
-
-  void _loadSampleData() {
-    // Sample data for demonstration
-    _attendanceList = [
-      Student(
-        id: "2024001",
-        name: "John Doe",
-        timestamp: DateTime.now(),
-        status: AttendanceStatus.present,
-      ),
-      Student(
-        id: "2024002",
-        name: "Jane Smith",
-        timestamp: DateTime.now(),
-        status: AttendanceStatus.absent,
-      ),
-    ];
+    // Removed sample data - starting with empty list
   }
 
   void _addAttendance(Student student) {
@@ -69,14 +51,12 @@ class _TeacherDashboardState extends State<TeacherDashboard>
   }
 
   void _markAsPresent(Student student) {
-    _addAttendance(
-      Student(
-        id: student.id,
-        name: student.name,
-        timestamp: DateTime.now(),
-        status: AttendanceStatus.present,
-      ),
-    );
+    _addAttendance(Student(
+      id: student.id,
+      name: student.name,
+      timestamp: DateTime.now(),
+      status: AttendanceStatus.present,
+    ));
   }
 
   void _markAsAbsent(String id) {
@@ -94,6 +74,11 @@ class _TeacherDashboardState extends State<TeacherDashboard>
   }
 
   Future<void> _exportAttendance() async {
+    if (_attendanceList.isEmpty) {
+      _showMessage("No attendance data to export", Colors.orange);
+      return;
+    }
+
     final csvData = StringBuffer();
     csvData.writeln("ID,Name,Timestamp,Status");
 
@@ -165,6 +150,8 @@ class _TeacherDashboardState extends State<TeacherDashboard>
                 );
                 Navigator.pop(context);
                 _showMessage("Student added successfully", Colors.green);
+              } else {
+                _showMessage("Please fill all fields", Colors.orange);
               }
             },
             child: const Text("Add"),
@@ -181,6 +168,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
         content: Text(msg),
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -228,6 +216,7 @@ class _TeacherDashboardState extends State<TeacherDashboard>
             onStudentScanned: (student) {
               _addAttendance(student);
               _tabController.animateTo(2);
+              _showMessage("${student.name} marked present!", Colors.green);
             },
           ),
           AttendanceListScreen(
